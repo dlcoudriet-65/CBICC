@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CBICC Member Survey</title>
+<style>
+  :root {
+    --ink: #1A1A2E; --muted: #555; --line: #d9dde3; --bg: #f5f7fa; --card: #fff;
+    --accent: #1565C0; --accent-tint: #E3EDF9; --error: #b3261e;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Open Sans", Arial, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+  header h1 { font-size: 1.6rem; line-height: 1.25; margin: 8px 0 8px; }
+  header p { color: var(--muted); margin: 0 0 8px; }
+  .progress { height: 6px; background: var(--line); border-radius: 3px; margin: 20px 0 8px; overflow: hidden; }
+  .progress span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  .step-label { font-size: .85rem; color: var(--muted); margin-bottom: 16px; }
+  section.step { display: none; }
+  section.step.active { display: block; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+  h2 { font-size: 1.25rem; margin: 0 0 4px; }
+  .intro { color: var(--muted); margin: 0 0 16px; }
+  fieldset { border: 0; padding: 0; margin: 0 0 22px; min-width: 0; }
+  legend, .q { font-weight: 600; margin-bottom: 8px; padding: 0; }
+  .hint { font-weight: 400; color: var(--muted); font-size: .9rem; display: block; }
+  label.opt { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 8px; margin-bottom: 6px; cursor: pointer; background: #fff; }
+  label.opt:hover { border-color: var(--accent); }
+  label.opt input { margin-top: 4px; flex: none; }
+  label.opt:has(input:checked) { background: var(--accent-tint); border-color: var(--accent); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+  input[type=text], input[type=email], select, textarea { width: 100%; padding: 10px; font: inherit; color: inherit;
+    border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  textarea { min-height: 90px; resize: vertical; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-weight: 600; margin-bottom: 4px; }
+  .scale { display: flex; gap: 6px; flex-wrap: wrap; }
+  .scale label.opt { flex: 1 1 0; min-width: 52px; justify-content: center; flex-direction: column; align-items: center; text-align: center; }
+  .scale-ends { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-top: 2px; }
+  .rank { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; }
+  .other { margin-top: 6px; display: none; }
+  .other.show { display: block; }
+  .nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; }
+  button { font: inherit; font-weight: 600; padding: 12px 22px; border-radius: 8px; cursor: pointer; border: 1px solid var(--accent); }
+  button.primary { background: var(--accent); color: #fff; }
+  button.secondary { background: #fff; color: var(--accent); }
+  button:disabled { opacity: .6; cursor: default; }
+  .error { color: var(--error); font-size: .9rem; margin-top: 6px; display: none; }
+  .error.show { display: block; }
+  fieldset.invalid > legend, .field.invalid > label { color: var(--error); }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .privacy { font-size: .85rem; color: var(--muted); }
+  #done h2 { margin-top: 0; }
+  #preview-out { white-space: pre-wrap; font: 12px/1.4 ui-monospace, Menlo, monospace; background: #f0f0f0; padding: 10px; border-radius: 6px; display: none; max-height: 320px; overflow: auto; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Member Survey: AI Workshops and Student Project Help</h1>
+    <p>The Chamber of Business &amp; Industry of Centre County is planning AI workshops for members, and looking at whether to connect member businesses with Penn State students for real projects. Your answers decide what we offer.</p>
+    <p class="hint">About 7 minutes · 4 short sections · contact details are optional</p>
+  </header>
+
+  <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+  <div class="step-label" id="step-label">Section 1 of 4</div>
+
+  <form id="survey" novalidate>
+    <!-- Honeypot: real people never see or fill this -->
+    <div class="hp" aria-hidden="true"><label>Leave blank <input type="text" name="_hp" tabindex="-1" autocomplete="off"></label></div>
+
+    <!-- ===== Section 1: About your business ===== -->
+    <section class="step active" data-title="About your business">
+      <div class="card">
+        <h2>1. About your business</h2>
+        <p class="intro">So we can see which kinds of businesses want what.</p>
+
+        <fieldset data-required data-section="About your business" data-question="Industry">
+          <legend>Which best describes your industry?</legend>
+          <select name="industry" aria-label="Industry">
+            <option value="">Choose one</option>
+            <option>Manufacturing</option>
+            <option>Construction, engineering or trades</option>
+            <option>Professional services (legal, accounting, consulting)</option>
+            <option>Financial services or insurance</option>
+            <option>Real estate</option>
+            <option>Healthcare or wellness</option>
+            <option>Retail or e-commerce</option>
+            <option>Hospitality, food or tourism</option>
+            <option>Technology or software</option>
+            <option>Marketing, media or creative</option>
+            <option>Nonprofit or community organization</option>
+            <option>Education</option>
+            <option>Government or public sector</option>
+            <option>Other</option>
+          </select>
+        </fieldset>
+
+        <fieldset data-required data-section="About your business" data-question="Number of employees">
+          <legend>How many people work at your business?</legend>
+          <div class="grid2">
+            <label class="opt"><input type="radio" name="size" value="Just me">Just me</label>
+            <label class="opt"><input type="radio" name="size" value="2–9">2–9</label>
+            <label class="opt"><input type="radio" name="size" value="10–49">10–49</label>
+            <label class="opt"><input type="radio" name="size" value="50–249">50–249</label>
+            <label class="opt"><input type="radio" name="size" value="250 or more">250 or more</label>
+          </div>
+        </fieldset>
+
+        <fieldset data-required data-section="About your business" data-question="Respondent role">
+          <legend>What is your role?</legend>
+          <div class="grid2">
+            <label class="opt"><input type="radio" name="role" value="Owner, CEO or president">Owner, CEO or president</label>
+            <label class="opt"><input type="radio" name="role" value="Senior leader or manager">Senior leader or manager</label>
+            <label class="opt"><input type="radio" name="role" value="Staff">Staff</label>
+            <label class="opt"><input type="radio" name="role" value="Other">Other</label>
+          </div>
+        </fieldset>
+
+        <fieldset data-required data-section="About your business" data-question="Current AI use">
+          <legend>How does your business use AI tools today?</legend>
+          <label class="opt"><input type="radio" name="ai_use" value="Not at all">Not at all</label>
+          <label class="opt"><input type="radio" name="ai_use" value="A few people try things now and then">A few people try things now and then</label>
+          <label class="opt"><input type="radio" name="ai_use" value="Regularly for some tasks">Regularly for some tasks (writing, research, marketing)</label>
+          <label class="opt"><input type="radio" name="ai_use" value="Built into how we work">Built into how we work, with tools or processes set up for it</label>
+        </fieldset>
+
+        <fieldset data-section="About your business" data-question="Biggest obstacle to using AI">
+          <legend>What holds you back most from using AI more? <span class="hint">Pick up to two.</span></legend>
+          <div class="grid2" data-max="2">
+            <label class="opt"><input type="checkbox" name="obstacle" value="Don't know where to start">Don't know where to start</label>
+            <label class="opt"><input type="checkbox" name="obstacle" value="No time to learn">No time to learn</label>
+            <label class="opt"><input type="checkbox" name="obstacle" value="Worried about data privacy or accuracy">Worried about data privacy or accuracy</label>
+            <label class="opt"><input type="checkbox" name="obstacle" value="Not sure it's worth the cost">Not sure it's worth the cost</label>
+            <label class="opt"><input type="checkbox" name="obstacle" value="Don't have the technical skills on staff">Don't have the technical skills on staff</label>
+            <label class="opt"><input type="checkbox" name="obstacle" value="Nothing much; we're already using it">Nothing much; we're already using it</label>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- ===== Section 2: Workshops ===== -->
+    <section class="step" data-title="AI workshops">
+      <div class="card">
+        <h2>2. AI workshops</h2>
+        <p class="intro">The chamber is planning practical, hands-on AI workshops. Tell us what would be worth your time.</p>
+
+        <fieldset data-required data-section="Workshops" data-question="Topics of interest">
+          <legend>Which topics interest you? <span class="hint">Check all that apply.</span></legend>
+          <div id="topics">
+            <label class="opt"><input type="checkbox" name="topic" value="AI basics for business owners: what it can and can't do">AI basics for business owners: what it can and can't do</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Writing faster with AI: email, proposals and reports">Writing faster with AI: email, proposals and reports</label>
+            <label class="opt"><input type="checkbox" name="topic" value="AI for marketing and social media content">AI for marketing and social media content</label>
+            <label class="opt"><input type="checkbox" name="topic" value="AI for sales: finding and following up with customers">AI for sales: finding and following up with customers</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Customer service and chatbots">Customer service and chatbots</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Automating admin: scheduling, invoicing and data entry">Automating admin: scheduling, invoicing and data entry</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Spreadsheets and data: analysis and reporting with AI">Spreadsheets and data: analysis and reporting with AI</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Choosing AI tools: what's worth paying for">Choosing AI tools: what's worth paying for</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Data privacy, security and using AI responsibly">Data privacy, security and using AI responsibly</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Writing an AI policy for your staff">Writing an AI policy for your staff</label>
+            <label class="opt"><input type="checkbox" name="topic" value="AI in hiring, training and HR">AI in hiring, training and HR</label>
+            <label class="opt"><input type="checkbox" name="topic" value="AI for operations and manufacturing">AI for operations and manufacturing</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Building a simple AI plan for your business">Building a simple AI plan for your business</label>
+            <label class="opt"><input type="checkbox" name="topic" value="Other" data-other="topic_other">Other</label>
+          </div>
+          <input type="text" class="other" id="topic_other" name="topic_other" placeholder="What topic?" aria-label="Other topic">
+        </fieldset>
+
+        <fieldset data-section="Workshops" data-question="Top three topics">
+          <legend>Of those, which are your top three? <span class="hint">Your #1 counts most.</span></legend>
+          <div class="rank">
+            <span>#1</span><select name="rank1" class="rank-select" aria-label="Top topic"><option value="">Check topics above first</option></select>
+            <span>#2</span><select name="rank2" class="rank-select" aria-label="Second topic"><option value="">Check topics above first</option></select>
+            <span>#3</span><select name="rank3" class="rank-select" aria-label="Third topic"><option value="">Check topics above first</option></select>
+          </div>
+        </fieldset>
+
+        <fieldset data-required data-section="Workshops" data-question="Skill level wanted">
+          <legend>What level would suit you?</legend>
+          <label class="opt"><input type="radio" name="level" value="Beginner">Beginner: start from the basics</label>
+          <label class="opt"><input type="radio" name="level" value="Intermediate">Intermediate: I use it, and want to use it better</label>
+          <label class="opt"><input type="radio" name="level" value="Advanced">Advanced: show me how to build workflows and automations</label>
+        </fieldset>
+
+        <fieldset data-section="Workshops" data-question="Preferred format">
+          <legend>Which formats work for you? <span class="hint">Check all that apply.</span></legend>
+          <div class="grid2">
+            <label class="opt"><input type="checkbox" name="format" value="Half-day in person, hands-on">Half-day in person, hands-on</label>
+            <label class="opt"><input type="checkbox" name="format" value="Lunch-and-learn (60–90 min)">Lunch-and-learn (60–90 min)</label>
+            <label class="opt"><input type="checkbox" name="format" value="Breakfast session">Breakfast session</label>
+            <label class="opt"><input type="checkbox" name="format" value="Virtual series of short sessions">Virtual series of short sessions</label>
+            <label class="opt"><input type="checkbox" name="format" value="Industry roundtable with peers">Industry roundtable with peers</label>
+            <label class="opt"><input type="checkbox" name="format" value="One-on-one office hours">One-on-one office hours</label>
+          </div>
+        </fieldset>
+
+        <fieldset data-section="Workshops" data-question="Who would attend">
+          <legend>Who from your business would attend?</legend>
+          <div class="grid2">
+            <label class="opt"><input type="radio" name="attendees" value="Just me">Just me</label>
+            <label class="opt"><input type="radio" name="attendees" value="Me and 1–2 colleagues">Me and 1–2 colleagues</label>
+            <label class="opt"><input type="radio" name="attendees" value="3 or more people">3 or more people</label>
+            <label class="opt"><input type="radio" name="attendees" value="Staff, not me">Staff, not me</label>
+          </div>
+        </fieldset>
+
+        <fieldset data-section="Workshops" data-question="Reasonable fee per person (half-day)">
+          <legend>What would be a fair member fee per person for a half-day, hands-on workshop?</legend>
+          <div class="grid2">
+            <label class="opt"><input type="radio" name="fee" value="Only if free">Only if free</label>
+            <label class="opt"><input type="radio" name="fee" value="Up to $50">Up to $50</label>
+            <label class="opt"><input type="radio" name="fee" value="$50–$100">$50–$100</label>
+            <label class="opt"><input type="radio" name="fee" value="$100–$200">$100–$200</label>
+            <label class="opt"><input type="radio" name="fee" value="More than $200 if it's practical">More than $200 if it's practical</label>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- ===== Section 3: Student project help ===== -->
+    <section class="step" data-title="Help from Penn State students">
+      <div class="card">
+        <h2>3. Help from Penn State students</h2>
+        <p class="intro">The chamber is exploring a program that would match member businesses with Penn State students for real, short-term projects, with the chamber handling the matching. Nothing is decided yet; your answers tell us whether to build it and what kind of help matters most.</p>
+
+        <fieldset data-required data-section="Student projects" data-question="Unstaffed projects">
+          <legend>Do you have projects you would take on if you had extra hands or skills?</legend>
+          <label class="opt"><input type="radio" name="has_projects" value="Yes, several">Yes, several</label>
+          <label class="opt"><input type="radio" name="has_projects" value="Yes, one or two">Yes, one or two</label>
+          <label class="opt"><input type="radio" name="has_projects" value="Maybe, not sure">Maybe, not sure</label>
+          <label class="opt"><input type="radio" name="has_projects" value="No">No</label>
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="Types of help needed" data-skip-if-no>
+          <legend>What kinds of help would you want from a student or student team? <span class="hint">Check all that apply.</span></legend>
+          <div class="grid2" id="needs">
+            <label class="opt"><input type="checkbox" name="need" value="AI and automation setup">AI and automation setup</label>
+            <label class="opt"><input type="checkbox" name="need" value="Data analysis and dashboards">Data analysis and dashboards</label>
+            <label class="opt"><input type="checkbox" name="need" value="Marketing, social media and content">Marketing, social media and content</label>
+            <label class="opt"><input type="checkbox" name="need" value="Website or e-commerce">Website or e-commerce</label>
+            <label class="opt"><input type="checkbox" name="need" value="Graphic design, photo or video">Graphic design, photo or video</label>
+            <label class="opt"><input type="checkbox" name="need" value="Market or customer research">Market or customer research</label>
+            <label class="opt"><input type="checkbox" name="need" value="Software, app or database development">Software, app or database development</label>
+            <label class="opt"><input type="checkbox" name="need" value="Process improvement and operations">Process improvement and operations</label>
+            <label class="opt"><input type="checkbox" name="need" value="Engineering or product design">Engineering or product design</label>
+            <label class="opt"><input type="checkbox" name="need" value="Finance, accounting or business planning">Finance, accounting or business planning</label>
+            <label class="opt"><input type="checkbox" name="need" value="Sales support and lead research">Sales support and lead research</label>
+            <label class="opt"><input type="checkbox" name="need" value="HR, recruiting or training materials">HR, recruiting or training materials</label>
+            <label class="opt"><input type="checkbox" name="need" value="Grant writing and research">Grant writing and research</label>
+            <label class="opt"><input type="checkbox" name="need" value="Sustainability or energy">Sustainability or energy</label>
+            <label class="opt"><input type="checkbox" name="need" value="Other" data-other="need_other">Other</label>
+          </div>
+          <input type="text" class="other" id="need_other" name="need_other" placeholder="What kind of help?" aria-label="Other kind of help">
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="Most needed type of help" data-skip-if-no>
+          <legend>Which one matters most?</legend>
+          <select name="need_top" id="need_top" aria-label="Most needed help"><option value="">Check types above first</option></select>
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="Project shape" data-skip-if-no>
+          <legend>What shape of project fits best? <span class="hint">Check all that apply.</span></legend>
+          <label class="opt"><input type="checkbox" name="shape" value="A few hours a week over a semester">A few hours a week over a semester</label>
+          <label class="opt"><input type="checkbox" name="shape" value="A short sprint of 2–4 weeks">A short sprint of 2–4 weeks</label>
+          <label class="opt"><input type="checkbox" name="shape" value="A class or capstone team project">A class or capstone team project</label>
+          <label class="opt"><input type="checkbox" name="shape" value="Full-time summer internship">Full-time summer internship</label>
+          <label class="opt"><input type="checkbox" name="shape" value="Ongoing part-time help">Ongoing part-time help</label>
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="Project description" data-skip-if-no>
+          <legend>Describe one project you would hand to a student. <span class="hint">Optional. One or two sentences is plenty.</span></legend>
+          <textarea name="project_desc" maxlength="1500" aria-label="Project description"></textarea>
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="Past experience with students">
+          <legend>Have you worked with student interns or student project teams before?</legend>
+          <label class="opt"><input type="radio" name="past_students" value="Yes, it went well">Yes, it went well</label>
+          <label class="opt"><input type="radio" name="past_students" value="Yes, mixed results">Yes, mixed results</label>
+          <label class="opt"><input type="radio" name="past_students" value="Yes, it didn't work out">Yes, it didn't work out</label>
+          <label class="opt"><input type="radio" name="past_students" value="No">No</label>
+        </fieldset>
+
+        <fieldset data-required data-section="Student projects" data-question="Likelihood to take part (1–5)">
+          <legend>If the chamber ran this program, how likely are you to take part?</legend>
+          <div class="scale">
+            <label class="opt"><input type="radio" name="likelihood" value="1">1</label>
+            <label class="opt"><input type="radio" name="likelihood" value="2">2</label>
+            <label class="opt"><input type="radio" name="likelihood" value="3">3</label>
+            <label class="opt"><input type="radio" name="likelihood" value="4">4</label>
+            <label class="opt"><input type="radio" name="likelihood" value="5">5</label>
+          </div>
+          <div class="scale-ends"><span>Not at all likely</span><span>Very likely</span></div>
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="Concerns">
+          <legend>What would worry you? <span class="hint">Check all that apply.</span></legend>
+          <div class="grid2">
+            <label class="opt"><input type="checkbox" name="concern" value="Time to supervise a student">Time to supervise a student</label>
+            <label class="opt"><input type="checkbox" name="concern" value="Quality of the work">Quality of the work</label>
+            <label class="opt"><input type="checkbox" name="concern" value="Confidentiality of our information">Confidentiality of our information</label>
+            <label class="opt"><input type="checkbox" name="concern" value="Who owns the work produced">Who owns the work produced</label>
+            <label class="opt"><input type="checkbox" name="concern" value="Cost">Cost</label>
+            <label class="opt"><input type="checkbox" name="concern" value="Students' availability around the academic calendar">Students' availability around the academic calendar</label>
+            <label class="opt"><input type="checkbox" name="concern" value="Liability if something goes wrong">Liability if something goes wrong</label>
+            <label class="opt"><input type="checkbox" name="concern" value="None of these">None of these</label>
+          </div>
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="Most valuable support from the chamber">
+          <legend>What would the chamber need to provide for this to be worth it? <span class="hint">Pick up to two.</span></legend>
+          <div class="grid2" data-max="2">
+            <label class="opt"><input type="checkbox" name="support" value="Vetted, well-matched students">Vetted, well-matched students</label>
+            <label class="opt"><input type="checkbox" name="support" value="Help scoping the project">Help scoping the project</label>
+            <label class="opt"><input type="checkbox" name="support" value="Standard agreements (confidentiality, ownership)">Standard agreements (confidentiality, ownership)</label>
+            <label class="opt"><input type="checkbox" name="support" value="Check-ins and quality review during the project">Check-ins and quality review during the project</label>
+            <label class="opt"><input type="checkbox" name="support" value="Handling student pay and paperwork">Handling student pay and paperwork</label>
+            <label class="opt"><input type="checkbox" name="support" value="A faculty advisor involved">A faculty advisor involved</label>
+          </div>
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="Reasonable cost per project">
+          <legend>For a semester-length student project, what total cost to your business would be reasonable, including student pay?</legend>
+          <div class="grid2">
+            <label class="opt"><input type="radio" name="budget" value="Only if free">Only if free</label>
+            <label class="opt"><input type="radio" name="budget" value="Under $500">Under $500</label>
+            <label class="opt"><input type="radio" name="budget" value="$500–$1,500">$500–$1,500</label>
+            <label class="opt"><input type="radio" name="budget" value="$1,500–$5,000">$1,500–$5,000</label>
+            <label class="opt"><input type="radio" name="budget" value="More than $5,000">More than $5,000</label>
+            <label class="opt"><input type="radio" name="budget" value="Depends on the project">Depends on the project</label>
+          </div>
+        </fieldset>
+
+        <fieldset data-section="Student projects" data-question="When a project would be ready">
+          <legend>When could you have a project ready?</legend>
+          <div class="grid2">
+            <label class="opt"><input type="radio" name="timing" value="Spring 2027 semester">Spring 2027 semester</label>
+            <label class="opt"><input type="radio" name="timing" value="Summer 2027">Summer 2027</label>
+            <label class="opt"><input type="radio" name="timing" value="Fall 2027 or later">Fall 2027 or later</label>
+            <label class="opt"><input type="radio" name="timing" value="Not sure yet">Not sure yet</label>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- ===== Section 4: Follow-up ===== -->
+    <section class="step" data-title="Staying in touch">
+      <div class="card">
+        <h2>4. Staying in touch</h2>
+        <p class="intro">Optional. Leave your details only if you would like us to follow up.</p>
+
+        <fieldset data-section="Follow-up" data-question="Follow-up wanted">
+          <legend>Would you like us to contact you about any of these?</legend>
+          <label class="opt"><input type="checkbox" name="followup" value="Workshop dates and registration">Workshop dates and registration</label>
+          <label class="opt"><input type="checkbox" name="followup" value="Joining a first group of businesses for the student project program">Joining a first group of businesses for the student project program</label>
+          <label class="opt"><input type="checkbox" name="followup" value="A short conversation about AI for my business">A short conversation about AI for my business</label>
+        </fieldset>
+
+        <div class="field" data-section="Follow-up" data-question="Name"><label for="name">Your name</label><input type="text" id="name" name="name" maxlength="120" autocomplete="name"></div>
+        <div class="field" data-section="Follow-up" data-question="Business name"><label for="business">Business name</label><input type="text" id="business" name="business" maxlength="160" autocomplete="organization"></div>
+        <div class="field" id="email-field" data-section="Follow-up" data-question="Business email"><label for="email">Business email</label><input type="email" id="email" name="email" maxlength="160" autocomplete="email">
+          <div class="error" id="email-error">Please enter a valid email, or leave it blank.</div></div>
+
+        <fieldset data-section="Follow-up" data-question="Anything else">
+          <legend>Anything else you'd like the chamber to know?</legend>
+          <textarea name="comments" maxlength="1500" aria-label="Other comments"></textarea>
+        </fieldset>
+
+        <p class="privacy">Please share business contact details only. Your answers go to the chamber and its AI advisor, Sagebridge, and are used only to plan these programs. Results are reported in summary, never with your name attached.</p>
+      </div>
+    </section>
+
+    <div class="error" id="step-error" role="alert">Please answer the highlighted questions.</div>
+    <div class="nav">
+      <button type="button" class="secondary" id="back">Back</button>
+      <button type="button" class="primary" id="next">Next</button>
+    </div>
+  </form>
+
+  <div class="card" id="done" hidden>
+    <h2>Thank you</h2>
+    <p>Your answers have been sent to the chamber. They will shape the workshops we run and whether we build the student project program.</p>
+    <pre id="preview-out"></pre>
+  </div>
+</main>
+
+<script>
+  // Set this only if the page is hosted somewhere other than Google Apps Script:
+  // paste the web app URL from the Apps Script deployment. Leave empty when the
+  // survey is served by Apps Script itself (the usual setup).
+  var ENDPOINT = "";
+
+  var form = document.getElementById("survey");
+  var steps = Array.prototype.slice.call(document.querySelectorAll("section.step"));
+  var current = 0;
+  var nextBtn = document.getElementById("next"), backBtn = document.getElementById("back");
+
+  function show(i) {
+    steps.forEach(function (s, n) { s.classList.toggle("active", n === i); });
+    current = i;
+    backBtn.style.visibility = i === 0 ? "hidden" : "visible";
+    nextBtn.textContent = i === steps.length - 1 ? "Submit" : "Next";
+    document.getElementById("bar").style.width = ((i + 1) / steps.length * 100) + "%";
+    document.getElementById("step-label").textContent = "Section " + (i + 1) + " of " + steps.length + " · " + steps[i].dataset.title;
+    document.getElementById("step-error").classList.remove("show");
+    window.scrollTo(0, 0);
+  }
+
+  function values(name) {
+    return Array.prototype.slice.call(form.querySelectorAll('[name="' + name + '"]'))
+      .filter(function (el) { return (el.type !== "checkbox" && el.type !== "radio") || el.checked; })
+      .map(function (el) { return el.value.trim(); })
+      .filter(Boolean);
+  }
+
+  function noProjects() { return values("has_projects")[0] === "No"; }
+
+  function validate(step) {
+    var ok = true;
+    step.querySelectorAll("fieldset[data-required]").forEach(function (fs) {
+      var answered = Array.prototype.some.call(fs.querySelectorAll("input,select,textarea"), function (el) {
+        return (el.type === "checkbox" || el.type === "radio") ? el.checked : el.value.trim() !== "";
+      });
+      fs.classList.toggle("invalid", !answered);
+      if (!answered) ok = false;
+    });
+    var email = step.querySelector("#email");
+    if (email) {
+      var bad = email.value.trim() !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+      document.getElementById("email-error").classList.toggle("show", bad);
+      document.getElementById("email-field").classList.toggle("invalid", bad);
+      if (bad) ok = false;
+    }
+    return ok;
+  }
+
+  // "Other" text boxes appear when their checkbox is ticked
+  form.querySelectorAll("[data-other]").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      document.getElementById(cb.dataset.other).classList.toggle("other", true);
+      document.getElementById(cb.dataset.other).classList.toggle("show", cb.checked);
+    });
+  });
+
+  // Groups with a "pick up to N" limit
+  form.querySelectorAll("[data-max]").forEach(function (group) {
+    var max = +group.dataset.max;
+    group.addEventListener("change", function () {
+      var boxes = group.querySelectorAll("input[type=checkbox]");
+      var n = Array.prototype.filter.call(boxes, function (b) { return b.checked; }).length;
+      boxes.forEach(function (b) { b.disabled = !b.checked && n >= max; });
+    });
+  });
+
+  function labelFor(cb) {
+    if (cb.dataset.other) {
+      var t = document.getElementById(cb.dataset.other).value.trim();
+      return t ? "Other: " + t : "Other";
+    }
+    return cb.value;
+  }
+
+  function fillSelect(sel, opts, keep, emptyText) {
+    sel.innerHTML = "";
+    var first = document.createElement("option");
+    first.value = ""; first.textContent = opts.length ? "Choose one" : emptyText;
+    sel.appendChild(first);
+    opts.forEach(function (o) {
+      var op = document.createElement("option"); op.value = o; op.textContent = o; sel.appendChild(op);
+    });
+    sel.value = opts.indexOf(keep) >= 0 ? keep : "";
+  }
+
+  // Ranking dropdowns follow the topics ticked above
+  function refreshRanks() {
+    var chosen = Array.prototype.slice.call(document.querySelectorAll('#topics input:checked')).map(labelFor);
+    document.querySelectorAll(".rank-select").forEach(function (sel) {
+      fillSelect(sel, chosen, sel.value, "Check topics above first");
+    });
+  }
+  document.getElementById("topics").addEventListener("change", refreshRanks);
+  document.getElementById("topic_other").addEventListener("input", refreshRanks);
+  document.querySelectorAll(".rank-select").forEach(function (sel) {
+    sel.addEventListener("change", function () {
+      document.querySelectorAll(".rank-select").forEach(function (other) {
+        if (other !== sel && other.value && other.value === sel.value) other.value = "";
+      });
+    });
+  });
+
+  function refreshNeedTop() {
+    var chosen = Array.prototype.slice.call(document.querySelectorAll('#needs input:checked')).map(labelFor);
+    var sel = document.getElementById("need_top");
+    fillSelect(sel, chosen, sel.value, "Check types above first");
+  }
+  document.getElementById("needs").addEventListener("change", refreshNeedTop);
+  document.getElementById("need_other").addEventListener("input", refreshNeedTop);
+
+  // Skip the detailed project questions for members with no projects
+  form.addEventListener("change", function (e) {
+    if (e.target.name !== "has_projects") return;
+    form.querySelectorAll("[data-skip-if-no]").forEach(function (fs) { fs.hidden = noProjects(); });
+  });
+
+  // One entry per question, in page order, for the email and the response sheet
+  function collect() {
+    var answers = [];
+    form.querySelectorAll("[data-question]").forEach(function (block) {
+      if (block.hidden) return;
+      var parts = [];
+      var seen = {};
+      block.querySelectorAll("input,select,textarea").forEach(function (el) {
+        if (seen[el.name] || el.classList.contains("other")) return;
+        seen[el.name] = true;
+        if (el.type === "checkbox") {
+          parts = parts.concat(Array.prototype.slice.call(block.querySelectorAll('[name="' + el.name + '"]:checked')).map(labelFor));
+        } else if (el.classList.contains("rank-select")) {
+          var v = el.value; if (v) parts.push(el.name.replace("rank", "#") + " " + v);
+        } else {
+          parts = parts.concat(values(el.name));
+        }
+      });
+      answers.push({ section: block.dataset.section, question: block.dataset.question, answer: parts.join("; ") });
+    });
+    return {
+      survey: "CBICC Member Survey",
+      submittedAt: new Date().toISOString(),
+      replyTo: values("email")[0] || "",
+      business: values("business")[0] || "",
+      _hp: values("_hp")[0] || "",
+      answers: answers
+    };
+  }
+
+  function send(payload) {
+    if (window.google && google.script && google.script.run) {
+      return new Promise(function (resolve, reject) {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).submitSurvey(payload);
+      });
+    }
+    if (ENDPOINT) {
+      // Apps Script web apps do not return CORS headers, so the response is opaque;
+      // a network failure still rejects.
+      return fetch(ENDPOINT, { method: "POST", mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+    }
+    return Promise.reject({ preview: true });
+  }
+
+  function finish(previewPayload) {
+    form.hidden = true;
+    document.querySelector(".progress").hidden = true;
+    document.getElementById("step-label").hidden = true;
+    var done = document.getElementById("done");
+    done.hidden = false;
+    if (previewPayload) {
+      done.querySelector("p").textContent = "Preview mode: this copy is not connected to Google Apps Script, so nothing was sent. This is what would have been emailed:";
+      var out = document.getElementById("preview-out");
+      out.style.display = "block";
+      out.textContent = previewPayload.answers.map(function (a) { return "[" + a.section + "] " + a.question + ": " + (a.answer || "-"); }).join("\n");
+    }
+    window.scrollTo(0, 0);
+  }
+
+  nextBtn.addEventListener("click", function () {
+    if (!validate(steps[current])) { document.getElementById("step-error").classList.add("show"); return; }
+    if (current < steps.length - 1) { show(current + 1); return; }
+    var payload = collect();
+    nextBtn.disabled = true; nextBtn.textContent = "Sending…";
+    send(payload).then(function () { finish(); }, function (err) {
+      if (err && err.preview) { finish(payload); return; }
+      nextBtn.disabled = false; nextBtn.textContent = "Submit";
+      var e = document.getElementById("step-error");
+      e.textContent = "Something went wrong sending your answers. Please try again in a moment.";
+      e.classList.add("show");
+    });
+  });
+  backBtn.addEventListener("click", function () { if (current > 0) show(current - 1); });
+
+  show(0);
+</script>
+</body>
+</html>
